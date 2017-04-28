@@ -92,16 +92,24 @@ namespace ClinicaVeterinaria.Controllers
         // GET: Donos/Delete/5
         public ActionResult Delete(int? id)
         {
+            //se não foi fornecido o ID do 'Dono' ...
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //redireciono o utilizador para a Lista de Donos
+                return RedirectToAction("Index");
             }
-            Donos donos = db.Donos.Find(id);
-            if (donos == null)
+            //vai à procura do 'Dono', cujo ID foi fornecido
+            Donos dono = db.Donos.Find(id);
+
+            //se o 'Dono' associado ao ID fornecido não existe ...
+            if (dono == null)
             {
-                return HttpNotFound();
+                //redireciono o utilizador para a Lista de Donos
+                return RedirectToAction("Index");
+
             }
-            return View(donos);
+            //mostra dados do 'Dono'
+            return View(dono);
         }
 
         // POST: Donos/Delete/5
@@ -109,10 +117,27 @@ namespace ClinicaVeterinaria.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Donos donos = db.Donos.Find(id);
-            db.Donos.Remove(donos);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+                //procura o dono na BD
+                Donos dono = db.Donos.Find(id);
+
+            try
+            {
+               
+                //marcar o 'dono' para a eliminação
+                db.Donos.Remove(dono);
+                //efetuar um 'commit' ao comando interior
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                //cria uma mensagem de erro a ser apresentada ao utilizador
+                ModelState.AddModelError("", string.Format("Ocorreu um erro na eliminação do Dono com ID={0}-{1}", id, dono.Nome));
+                //invoca a View, com os dados do 'Dono' atual
+                return View(dono);
+                
+            }
+ 
         }
 
         protected override void Dispose(bool disposing)

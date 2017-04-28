@@ -4,9 +4,12 @@
     ViewBag.Title = "Delete";
 }
 
-<h2>Delete</h2>
+<h2>Apagar dados dos donos</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+<h3>Quer mesmo apagar este 'Dono'?</h3>
 <div>
     <h4>Donos</h4>
     <hr />
@@ -34,7 +37,7 @@
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+            @Html.ActionLink("Regressar à Lista", "Index")
         </div>
     }
 </div>
