@@ -46,16 +46,55 @@ namespace ClinicaVeterinaria.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "DonoID,Nome,NIF")] Donos donos)
+        public ActionResult Create([Bind(Include = "Nome,NIF")] Donos dono)
         {
-            if (ModelState.IsValid)
+            //determinar o ID a atribuir ao novo 'dono'
+
+            int novoID = 0;
+
+            try
             {
-                db.Donos.Add(donos);
+            novoID = db.Donos.Max(d => d.DonoID) + 1;
+            }
+            catch (Exception)
+            {
+                //não existe dados na BD
+                // o Max  devolve Null
+                novoID = 1;
+                throw;
+            }
+            //outra forma
+            /* novoID = (from d in db.Donos
+                       orderby d.DonoID descending
+                       select d.DonoID
+                       ).FirstOrDefault()+1;
+
+             //outra forma
+             novoID = db.Donos.OrderByDescending(d => d.DonoID).FirstOrDefault().DonoID + 1;
+             */
+
+            //atribuir o novo ID ao 'dono'
+            dono.DonoID = novoID;
+            try
+            {
+            if (ModelState.IsValid)//confronta se os dados a ser  introduzidos estão consistentes com o Model
+            {
+                //adicionar um novo dono
+                db.Donos.Add(dono);
+                //guardar as alterações
                 db.SaveChanges();
+                //redirecionar para a página dde início
                 return RedirectToAction("Index");
             }
+            }
+            catch (Exception ex)
+            {
 
-            return View(donos);
+                ModelState.AddModelError("", string.Format("Ocorreu um erro na operação de guardar um novo Dono"));
+                //adicionar a uma classe Erro(id, TimeStamp, Operação, mensagem de erro 'ex.Message', qual o user que gerou o erro) enviar emailao utilizador 'Admin' a avisar da ocorrenciado do erro
+            }
+            // se houver problemas volta pra a view do create com os dados do dono
+            return View(dono);
         }
 
         // GET: Donos/Edit/5
