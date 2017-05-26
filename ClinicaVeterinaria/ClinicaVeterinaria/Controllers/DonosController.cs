@@ -61,7 +61,7 @@ namespace ClinicaVeterinaria.Controllers
                 //não existe dados na BD
                 // o Max  devolve Null
                 novoID = 1;
-                throw;
+
             }
             //outra forma
             /* novoID = (from d in db.Donos
